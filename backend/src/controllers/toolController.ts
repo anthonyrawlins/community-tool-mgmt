@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { ToolService } from '@/services/toolService';
-import { asyncHandler } from '@/middleware/error';
-import { logger } from '@/config/logger';
+import { ToolService } from '../services/toolService';
+import { asyncHandler } from '../middleware/error';
+import { logger } from '../config/logger';
 
 export class ToolController {
   /**

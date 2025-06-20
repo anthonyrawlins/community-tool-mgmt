@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authenticate, authorize } from '@/middleware/auth';
-import { asyncHandler } from '@/middleware/error';
-import { prisma } from '@/config/database';
+import { authenticate, authorize } from '../middleware/auth';
+import { asyncHandler } from '../middleware/error';
+import { prisma } from '../config/database';
 
 const router = Router();
 

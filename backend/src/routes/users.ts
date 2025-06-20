@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate, authorize } from '@/middleware/auth';
-import { validate, schemas } from '@/middleware/validation';
-import { auditLog } from '@/middleware/logging';
-import { asyncHandler } from '@/middleware/error';
-import { prisma } from '@/config/database';
+import { authenticate, authorize } from '../middleware/auth';
+import { validate, schemas } from '../middleware/validation';
+import { auditLog } from '../middleware/logging';
+import { asyncHandler } from '../middleware/error';
+import { prisma } from '../config/database';
 
 const router = Router();
 
@@ -90,9 +90,9 @@ router.get('/',
 
     const where = search ? {
       OR: [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } }
+        { firstName: { contains: search as string, mode: 'insensitive' as const } },
+        { lastName: { contains: search as string, mode: 'insensitive' as const } },
+        { email: { contains: search as string, mode: 'insensitive' as const } }
       ]
     } : {};
 

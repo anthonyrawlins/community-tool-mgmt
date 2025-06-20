@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { ToolController } from '@/controllers/toolController';
-import { validate, schemas } from '@/middleware/validation';
-import { authenticate, authorize, optionalAuth } from '@/middleware/auth';
-import { auditLog } from '@/middleware/logging';
+import { ToolController } from '../controllers/toolController';
+import { validate, schemas } from '../middleware/validation';
+import { authenticate, authorize, optionalAuth } from '../middleware/auth';
+import { auditLog } from '../middleware/logging';
 
 const router = Router();
 

@@ -1,30 +1,31 @@
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import path from 'path';
-import { logger } from '@/config/logger';
-import { errorHandler, notFoundHandler } from '@/middleware/error';
-import { requestLogger } from '@/middleware/logging';
-import { generalRateLimit } from '@/middleware/rateLimit';
-import { prisma } from '@/config/database';
+import { logger } from './config/logger';
+import { errorHandler, notFoundHandler } from './middleware/error';
+import { requestLogger } from './middleware/logging';
+import { generalRateLimit } from './middleware/rateLimit';
+import { prisma } from './config/database';
 
 // Import routes
-import authRoutes from '@/routes/auth';
-import userRoutes from '@/routes/users';
-import toolRoutes from '@/routes/tools';
-import loanRoutes from '@/routes/loans';
-import reservationRoutes from '@/routes/reservations';
-import membershipRoutes from '@/routes/memberships';
-import paymentRoutes from '@/routes/payments';
-import categoryRoutes from '@/routes/categories';
-import adminRoutes from '@/routes/admin';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import toolRoutes from './routes/tools';
+import loanRoutes from './routes/loans';
+import reservationRoutes from './routes/reservations';
+import membershipRoutes from './routes/memberships';
+import paymentRoutes from './routes/payments';
+import categoryRoutes from './routes/categories';
+import adminRoutes from './routes/admin';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 const API_VERSION = process.env.API_VERSION || 'v1';
 
 // Trust proxy for accurate IP addresses

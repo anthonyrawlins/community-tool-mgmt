@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '@/config/logger';
-import { Prisma } from '@prisma/client';
+import { logger } from '../config/logger';
+import { ZodError } from 'zod';
+import { 
+  Prisma
+} from '@prisma/client';
 
 export class AppError extends Error {
   public statusCode: number;
@@ -106,7 +109,8 @@ export const errorHandler = (
   let appError = error;
 
   // Handle Prisma errors
-  if (error.name?.includes('Prisma') || error instanceof Prisma.PrismaClientError) {
+  if (error.name?.includes('Prisma') || error instanceof Prisma.PrismaClientKnownRequestError || 
+      error instanceof Prisma.PrismaClientValidationError || error instanceof Prisma.PrismaClientUnknownRequestError) {
     appError = handlePrismaError(error);
   }
 

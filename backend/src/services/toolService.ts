@@ -1,6 +1,6 @@
-import { prisma } from '@/config/database';
-import { NotFoundError, ConflictError } from '@/middleware/error';
-import { auditLogger } from '@/config/logger';
+import { prisma } from '../config/database';
+import { NotFoundError, ConflictError } from '../middleware/error';
+import { auditLogger } from '../config/logger';
 import { Tool, ToolStatus, ToolCondition } from '@prisma/client';
 
 export interface ToolFilters {
@@ -51,10 +51,10 @@ export class ToolService {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { brand: { contains: search, mode: 'insensitive' } },
-        { model: { contains: search, mode: 'insensitive' } }
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { description: { contains: search, mode: 'insensitive' as const } },
+        { brand: { contains: search, mode: 'insensitive' as const } },
+        { model: { contains: search, mode: 'insensitive' as const } }
       ];
     }
 

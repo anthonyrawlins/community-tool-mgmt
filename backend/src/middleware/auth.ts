@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken } from '@/utils/auth';
-import { AuthUser, JWTPayload } from '@/types/auth';
-import { prisma } from '@/config/database';
+import { verifyAccessToken } from '../utils/auth';
+import { AuthUser, JWTPayload } from '../types/auth';
+import { prisma } from '../config/database';
 import { UserRole } from '@prisma/client';
 
 // Extend Request interface to include user

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { AuthService } from '@/services/authService';
-import { asyncHandler } from '@/middleware/error';
-import { logger } from '@/config/logger';
+import { AuthService } from '../services/authService';
+import { asyncHandler } from '../middleware/error';
+import { logger } from '../config/logger';
 
 export class AuthController {
   /**

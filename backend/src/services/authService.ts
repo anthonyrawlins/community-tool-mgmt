@@ -1,8 +1,8 @@
-import { prisma } from '@/config/database';
-import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken, generateMembershipNumber, getTokenExpirationTime } from '@/utils/auth';
-import { LoginRequest, RegisterRequest, AuthResponse, AuthUser } from '@/types/auth';
-import { ConflictError, UnauthorizedError, NotFoundError } from '@/middleware/error';
-import { auditLogger } from '@/config/logger';
+import { prisma } from '../config/database';
+import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken, generateMembershipNumber, getTokenExpirationTime } from '../utils/auth';
+import { LoginRequest, RegisterRequest, AuthResponse, AuthUser } from '../types/auth';
+import { ConflictError, UnauthorizedError, NotFoundError } from '../middleware/error';
+import { auditLogger } from '../config/logger';
 
 export class AuthService {
   /**

@@ -33,7 +33,7 @@ git pull origin main
 
 ```bash
 # Set your Docker Hub username
-export DOCKER_USER="yourdockerhubusername"
+export DOCKER_USER="anthonyrawlins"
 
 # Verify tengig network exists
 docker network ls | grep tengig
@@ -65,7 +65,7 @@ cd ..
 
 ```bash
 # Deploy the stack
-DOCKER_USER=yourdockerhubusername docker stack deploy -c docker-compose.swarm.yml ballarat-tools
+DOCKER_USER=anthonyrawlins docker stack deploy -c docker-compose.swarm.yml ballarat-tools
 
 # Monitor deployment
 docker stack ps ballarat-tools
@@ -84,7 +84,7 @@ docker service logs ballarat-tools_backend
 docker service logs ballarat-tools_db
 
 # Test health endpoints
-curl -k https://tools.home.deepblack.cloud/health
+curl -k https://tools.home.deepblack.cloud/api/health
 ```
 
 ## Expected Services
@@ -130,7 +130,7 @@ docker service scale ballarat-tools_frontend=3
 docker service scale ballarat-tools_backend=3
 
 # Update service (after new image push)
-docker service update --image yourusername/ballarat-tools-frontend:latest ballarat-tools_frontend
+docker service update --image anthonyrawlins/ballarat-tools-frontend:latest ballarat-tools_frontend
 
 # Remove stack (if needed)
 docker stack rm ballarat-tools

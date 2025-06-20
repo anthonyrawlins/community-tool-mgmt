@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate, requireActiveMembership } from '@/middleware/auth';
-import { validate, schemas } from '@/middleware/validation';
-import { auditLog } from '@/middleware/logging';
-import { asyncHandler, NotFoundError, ConflictError } from '@/middleware/error';
-import { prisma } from '@/config/database';
+import { authenticate, requireActiveMembership } from '../middleware/auth';
+import { validate, schemas } from '../middleware/validation';
+import { auditLog } from '../middleware/logging';
+import { asyncHandler, NotFoundError, ConflictError } from '../middleware/error';
+import { prisma } from '../config/database';
 
 const router = Router();
 

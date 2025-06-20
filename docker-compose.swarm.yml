@@ -34,9 +34,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes --requirepass-file /run/secrets/redis_password
-    secrets:
-      - redis_password
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     networks:

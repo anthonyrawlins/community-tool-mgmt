@@ -13,18 +13,16 @@ WORKDIR /app
 
 # Copy package files
 COPY backend/package*.json ./
-COPY backend/yarn.lock* ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install production dependencies only
+RUN npm install --production && npm cache clean --force
 
 FROM base AS builder
 WORKDIR /app
 
 # Copy package files and install all dependencies (including dev)
 COPY backend/package*.json ./
-COPY backend/yarn.lock* ./
-RUN npm ci
+RUN npm install
 
 # Copy backend source code
 COPY backend/src ./src
@@ -32,25 +30,35 @@ COPY backend/prisma ./prisma
 COPY backend/tsconfig.json ./
 COPY backend/docker-entrypoint.sh ./docker-entrypoint.sh
 
+# Generate Prisma client first
+RUN npx prisma generate
+
 # Build the application (compile TypeScript to JavaScript)
 RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
 
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl libssl3
+
 # Set environment
 ENV NODE_ENV=production
 ENV PORT=8000
 
-# Copy production dependencies
+# Copy production dependencies and generated Prisma client
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy built application (compiled JavaScript)
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
-COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x ./docker-entrypoint.sh
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
+# Copy and set permissions for entrypoint script
+COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh && chown nextjs:nodejs ./docker-entrypoint.sh
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/uploads && \
@@ -65,6 +73,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
-# Use dumb-init to handle signals properly and custom entrypoint for secrets
-ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/server.js"]
