@@ -59,11 +59,11 @@ services:
     image: ${DOCKER_USER:-yourusername}/ballarat-tools-backend:latest
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://ballarat_user:CHANGEME_secure_db_password_123!@db:5432/ballarat_tools
-      REDIS_URL: redis://:CHANGEME_secure_redis_password_456!@redis:6379
+      DATABASE_URL: postgresql://ballarat_user:${DB_PASSWORD}@db:5432/ballarat_tools
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET_FILE: /run/secrets/jwt_secret
       CORS_ORIGIN: https://tools.home.deepblack.cloud
-      PORT: 8000
+      PORT: 3001
       API_VERSION: v1
     secrets:
       - jwt_secret

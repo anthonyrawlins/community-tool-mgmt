@@ -1,0 +1,47 @@
+  # Backend API
+  backend:
+    image: ${DOCKER_USER:-yourusername}/ballarat-tools-backend:latest
+    environment:
+      NODE_ENV: production
+      CORS_ORIGIN: https://tools.home.deepblack.cloud
+      PORT: 8000
+      API_VERSION: v1
+      # Database will be configured by reading secret files in the application
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ballarat_tools
+      DATABASE_USER: ballarat_user
+      # Redis configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    secrets:
+      - jwt_secret
+      - stripe_secret_key
+      - db_password
+      - redis_password
+    networks:
+      - internal
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

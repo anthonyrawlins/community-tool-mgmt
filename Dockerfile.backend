@@ -1,36 +1,8 @@
-# Backend Dockerfile for Node.js/Express API
+# Backend Dockerfile - Fix for Prisma + OpenSSL in Alpine
 FROM node:18-alpine AS base
 
-# Install system dependencies
-RUN apk add --no-cache \
-    curl \
-    dumb-init \
-    && addgroup -g 1001 -S nodejs \
-    && adduser -S nextjs -u 1001
-
-FROM base AS deps
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-COPY yarn.lock* ./
-
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-FROM base AS builder
-WORKDIR /app
-
-# Copy package files and install all dependencies (including dev)
-COPY package*.json ./
-COPY yarn.lock* ./
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application if needed (for TypeScript compilation, etc.)
-RUN npm run build || true
+# Install system dependencies including OpenSSL for Prisma
+RUN apk add --no-cache     curl     dumb-init     openssl     && addgroup -g 1001 -S nodejs     && adduser -S nextjs -u 1001
 
 FROM base AS runner
 WORKDIR /app
@@ -39,17 +11,20 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8000
 
-# Copy production dependencies
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copy package.json and install all dependencies
+COPY backend/package*.json ./
+RUN npm install
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist || true
-COPY --from=builder --chown=nextjs:nodejs /app/src ./src
-COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+# Copy backend source code and configuration
+COPY backend/src ./src
+COPY backend/prisma ./prisma
+COPY backend/tsconfig.json ./
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Create necessary directories
-RUN mkdir -p /app/logs /app/uploads && \
-    chown -R nextjs:nodejs /app/logs /app/uploads
+RUN mkdir -p /app/logs /app/uploads &&     chown -R nextjs:nodejs /app/logs /app/uploads
 
 # Switch to non-root user
 USER nextjs
@@ -57,9 +32,8 @@ USER nextjs
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3   CMD curl -f http://localhost:8000/api/health || exit 1
 
-# Use dumb-init to handle signals properly
+# Use dumb-init and tsx with proper path mapping support
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["npm", "start"]
+CMD ["npx", "tsx", "--tsconfig", "tsconfig.json", "src/server.ts"]
