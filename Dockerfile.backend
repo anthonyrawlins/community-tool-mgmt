@@ -46,6 +46,9 @@ COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist || true
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/backend/docker-entrypoint.sh ./
+RUN chmod +x ./docker-entrypoint.sh
+COPY --from=builder --chown=nextjs:nodejs /app/backend/prisma ./prisma
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/uploads && \
@@ -58,8 +61,8 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8000/api/health || exit 1
+  CMD curl -f http://localhost:8000/health || exit 1
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
+# Use dumb-init to handle signals properly and custom entrypoint for secrets
+ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
 CMD ["npm", "start"]

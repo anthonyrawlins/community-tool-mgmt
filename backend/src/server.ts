@@ -189,11 +189,11 @@ const startServer = async () => {
     await prisma.$connect();
     logger.info('Database connected successfully');
     
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`🚀 Ballarat Tool Library API server running on port ${PORT}`);
       logger.info(`📚 Environment: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`🌐 Health check: http://localhost:${PORT}/health`);
-      logger.info(`📖 API Documentation: http://localhost:${PORT}/api-docs`);
+      logger.info(`🌐 Health check: http://0.0.0.0:${PORT}/health`);
+      logger.info(`📖 API Documentation: http://0.0.0.0:${PORT}/api-docs`);
     });
 
     // Handle server errors
