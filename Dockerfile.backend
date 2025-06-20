@@ -12,8 +12,8 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY yarn.lock* ./
+COPY backend/package*.json ./
+COPY backend/yarn.lock* ./
 
 # Install dependencies
 RUN npm ci --only=production && npm cache clean --force
@@ -22,12 +22,15 @@ FROM base AS builder
 WORKDIR /app
 
 # Copy package files and install all dependencies (including dev)
-COPY package*.json ./
-COPY yarn.lock* ./
+COPY backend/package*.json ./
+COPY backend/yarn.lock* ./
 RUN npm ci
 
-# Copy source code
-COPY . .
+# Copy backend source code
+COPY backend/src ./src
+COPY backend/prisma ./prisma
+COPY backend/tsconfig.json ./
+COPY backend/docker-entrypoint.sh ./docker-entrypoint.sh
 
 # Build the application if needed (for TypeScript compilation, etc.)
 RUN npm run build || true
@@ -46,9 +49,9 @@ COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist || true
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
-COPY --from=builder --chown=nextjs:nodejs /app/backend/docker-entrypoint.sh ./
+COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
-COPY --from=builder --chown=nextjs:nodejs /app/backend/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/uploads && \
