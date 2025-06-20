@@ -56,7 +56,7 @@ services:
 
   # Backend API
   backend:
-    image: ${DOCKER_USER:-yourusername}/ballarat-tools-backend:latest
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tools-backend:latest
     environment:
       NODE_ENV: production
       CORS_ORIGIN: https://tools.home.deepblack.cloud
@@ -97,7 +97,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: ${DOCKER_USER:-yourusername}/ballarat-tools-frontend:latest
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tools-frontend:latest
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: https://tools.home.deepblack.cloud/api
