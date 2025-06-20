@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AccessibilityProvider } from "@/components/providers/AccessibilityProvider";
+import { VersionLogger } from "@/components/VersionLogger";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,6 +74,7 @@ export default function RootLayout({
         <link rel="manifest" href="/favicon_io/site.webmanifest" />
       </head>
       <body className="font-sans">
+        <VersionLogger />
         <AccessibilityProvider>
           {children}
         </AccessibilityProvider>

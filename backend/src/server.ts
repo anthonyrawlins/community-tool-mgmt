@@ -71,7 +71,11 @@ app.get('/health', (req, res) => {
     message: 'Ballarat Tool Library API is running',
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || '1.0.0',
-    environment: process.env.NODE_ENV || 'development'
+    buildVersion: 'alpha-2',
+    apiVersion: API_VERSION,
+    environment: process.env.NODE_ENV || 'development',
+    nodeVersion: process.version,
+    uptime: process.uptime()
   });
 });
 
@@ -193,6 +197,10 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`🚀 Ballarat Tool Library API server running on port ${PORT}`);
       logger.info(`📚 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🔢 API Version: ${API_VERSION}`);
+      logger.info(`📦 Build Version: alpha-2`);
+      logger.info(`🕒 Build Date: ${new Date().toISOString()}`);
+      logger.info(`⚙️  Node Version: ${process.version}`);
       logger.info(`🌐 Health check: http://0.0.0.0:${PORT}/health`);
       logger.info(`📖 API Documentation: http://0.0.0.0:${PORT}/api-docs`);
     });
