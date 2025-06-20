@@ -4,6 +4,9 @@
 
 This repository contains the complete infrastructure setup for the Ballarat Tool Library, a community tool lending library web application deployed on Vercel (frontend) and Railway (backend) with full Australian GST compliance and payment processing via Stripe.
 
+**Current Version**: `alpha-1` | **API**: `v1` | **Status**: Alpha Testing  
+📋 [Version Management Documentation](./VERSION_MANAGEMENT.md)
+
 ## 🏗️ Architecture
 
 ### Technology Stack
