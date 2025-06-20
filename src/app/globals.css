@@ -4,7 +4,7 @@
   /* High contrast colors for aging users */
   --background: #ffffff;
   --foreground: #1a1a1a;
-  --primary: #2563eb;
+  --primary: rgb(50, 103, 104); /* Ballarat Tool Library corporate color */
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
@@ -16,7 +16,7 @@
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #2563eb;
+  --ring: rgb(50, 103, 104); /* Focus ring using corporate color */
   --radius: 0.5rem;
 }
 
@@ -73,7 +73,7 @@
     /* High contrast dark mode */
     --background: #0f172a;
     --foreground: #f8fafc;
-    --primary: #3b82f6;
+    --primary: rgb(60, 123, 124); /* Ballarat Tool Library corporate color - dark mode variant */
     --primary-foreground: #f8fafc;
     --secondary: #1e293b;
     --secondary-foreground: #f8fafc;
@@ -85,7 +85,7 @@
     --destructive-foreground: #f8fafc;
     --border: #334155;
     --input: #334155;
-    --ring: #3b82f6;
+    --ring: rgb(60, 123, 124); /* Focus ring using corporate color - dark mode */
   }
 }
 

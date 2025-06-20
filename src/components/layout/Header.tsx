@@ -19,10 +19,17 @@ export function Header() {
           <div className="flex items-center space-x-4">
             <Link 
               href="/" 
-              className="text-2xl font-bold text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
+              className="flex items-center space-x-3 text-2xl font-bold text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
             >
-              <span className="sr-only">Ballarat Tool Library - </span>
-              Home
+              <img 
+                src="/Ballarat+Tool+Library+Logo+Large+Transparent.png" 
+                alt="Ballarat Tool Library Logo" 
+                className="h-10 w-auto"
+                width={40}
+                height={40}
+              />
+              <span className="hidden sm:inline">Ballarat Tool Library</span>
+              <span className="sm:hidden">BTL</span>
             </Link>
           </div>
 

@@ -14,12 +14,12 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-muted-foreground leading-relaxed">
               Borrow tools, save money, build community. Access hundreds of quality tools 
-              with your annual membership starting at just $55.
+              with your annual membership starting at just $33 (concession).
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
                 <Link href="/register">
-                  Join Now - $55/year
+                  Join Now - From $33/year
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
@@ -45,8 +45,8 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-4">Choose Your Membership</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Select Basic ($55) for essential tools or Premium ($70) for access to 
-                specialized equipment and extended borrowing periods.
+                Select Concession ($33), Individual ($55), or Couple ($77) membership 
+                for access to our full range of tools and equipment.
               </p>
             </div>
             <div className="text-center p-6">
@@ -79,74 +79,105 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
             Membership Options
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Basic Membership */}
-            <div className="bg-background border border-border rounded-lg p-8">
-              <h3 className="text-2xl font-bold mb-4">Basic Membership</h3>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-primary">$55</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {/* Concession Membership */}
+            <div className="bg-background border border-border rounded-lg p-6">
+              <h3 className="text-xl font-bold mb-4">Concession</h3>
+              <div className="mb-4">
+                <span className="text-3xl font-bold text-primary">$33</span>
                 <span className="text-muted-foreground ml-2">per year</span>
               </div>
-              <ul className="space-y-3 mb-8">
+              <p className="text-sm text-muted-foreground mb-4">GST inclusive</p>
+              <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-start">
-                  <span className="text-green-600 mr-3 mt-1">✓</span>
-                  <span>Access to essential hand tools and basic power tools</span>
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Full access to all tools</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-600 mr-3 mt-1">✓</span>
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
                   <span>7-day borrowing period</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-600 mr-3 mt-1">✓</span>
-                  <span>Online catalog and booking system</span>
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Online booking system</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-600 mr-3 mt-1">✓</span>
-                  <span>Basic tool safety information</span>
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Valid concession card required</span>
                 </li>
               </ul>
               <Button className="w-full" variant="outline" asChild>
-                <Link href="/register?plan=basic">
-                  Choose Basic
+                <Link href="/register?plan=concession">
+                  Choose Concession
                 </Link>
               </Button>
             </div>
 
-            {/* Premium Membership */}
-            <div className="bg-primary text-primary-foreground rounded-lg p-8 relative">
+            {/* Individual Membership */}
+            <div className="bg-primary text-primary-foreground rounded-lg p-6 relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
                 Most Popular
               </div>
-              <h3 className="text-2xl font-bold mb-4">Premium Membership</h3>
-              <div className="mb-6">
-                <span className="text-4xl font-bold">$70</span>
+              <h3 className="text-xl font-bold mb-4">Individual</h3>
+              <div className="mb-4">
+                <span className="text-3xl font-bold">$55</span>
                 <span className="text-primary-foreground/80 ml-2">per year</span>
               </div>
-              <ul className="space-y-3 mb-8">
+              <p className="text-sm text-primary-foreground/80 mb-4">GST inclusive</p>
+              <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-start">
-                  <span className="text-green-300 mr-3 mt-1">✓</span>
-                  <span>Everything in Basic membership</span>
+                  <span className="text-green-300 mr-2 mt-1">✓</span>
+                  <span>Full access to all tools</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-300 mr-3 mt-1">✓</span>
-                  <span>Access to premium tools and specialized equipment</span>
+                  <span className="text-green-300 mr-2 mt-1">✓</span>
+                  <span>7-day borrowing period</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-300 mr-3 mt-1">✓</span>
-                  <span>14-day borrowing period</span>
+                  <span className="text-green-300 mr-2 mt-1">✓</span>
+                  <span>Online booking system</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-300 mr-3 mt-1">✓</span>
-                  <span>Priority booking and reservations</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-300 mr-3 mt-1">✓</span>
-                  <span>Detailed tool guides and video tutorials</span>
+                  <span className="text-green-300 mr-2 mt-1">✓</span>
+                  <span>Single person membership</span>
                 </li>
               </ul>
               <Button className="w-full bg-background text-foreground hover:bg-background/90" asChild>
-                <Link href="/register?plan=premium">
-                  Choose Premium
+                <Link href="/register?plan=individual">
+                  Choose Individual
+                </Link>
+              </Button>
+            </div>
+
+            {/* Couple Membership */}
+            <div className="bg-background border border-border rounded-lg p-6">
+              <h3 className="text-xl font-bold mb-4">Couple</h3>
+              <div className="mb-4">
+                <span className="text-3xl font-bold text-primary">$77</span>
+                <span className="text-muted-foreground ml-2">per year</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">GST inclusive</p>
+              <ul className="space-y-2 mb-6 text-sm">
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Full access to all tools</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>7-day borrowing period</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Online booking system</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2 mt-1">✓</span>
+                  <span>Two person membership</span>
+                </li>
+              </ul>
+              <Button className="w-full" variant="outline" asChild>
+                <Link href="/register?plan=couple">
+                  Choose Couple
                 </Link>
               </Button>
             </div>

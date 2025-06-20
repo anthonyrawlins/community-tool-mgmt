@@ -11,9 +11,9 @@ All version numbers MUST be kept synchronized across:
 ## Current Version Status
 
 - **API**: v1 (stable alpha)
-- **Release**: alpha-1
-- **Docker Tags**: alpha-1
-- **Git Tag**: alpha-1
+- **Release**: alpha-2
+- **Docker Tags**: alpha-2
+- **Git Tag**: alpha-2
 
 ## TODOs for Version Management
 
@@ -30,7 +30,18 @@ All version numbers MUST be kept synchronized across:
 
 ## Version History
 
-### alpha-1 (Current)
+### alpha-2 (Current)
+- **Released**: 2025-06-21
+- **Status**: Minor release with corrected pricing structure and comprehensive static pages
+- **Git Tag**: alpha-2
+- **Docker Images**: 
+  - `anthonyrawlins/ballarat-tools-backend:alpha-2`
+  - `anthonyrawlins/ballarat-tools-frontend:alpha-2`
+- **API Version**: v1
+- **Deployment**: https://tools.home.deepblack.cloud/
+- **Changes**: 3-tier pricing (Concession $33, Individual $55, Couple $77), About/Contact/FAQ/How-it-works pages, corporate branding
+
+### alpha-1
 - **Released**: 2025-06-20
 - **Status**: Alpha release with full frontend/backend connectivity
 - **Git Tag**: alpha-1
