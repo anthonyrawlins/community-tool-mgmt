@@ -1,0 +1,58 @@
+# Production overrides for docker-compose
+version: '3.8'
+
+services:
+  database:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    command: postgres -c max_connections=200 -c shared_buffers=256MB -c effective_cache_size=1GB
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD}
+
+  backend:
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      replicas: 2
+    environment:
+      NODE_ENV: production
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_logs:/app/logs
+
+  frontend:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+      replicas: 2
+    environment:
+      NODE_ENV: production
+
+  nginx:
+    profiles:
+      - default  # Include nginx in production by default

@@ -1,0 +1,34 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd backend && npm ci && npm run build"
+
+[deploy]
+startCommand = "cd backend && npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "ballarat-backend-prod"
+source = "."
+
+[services.variables]
+NODE_ENV = "production"
+PORT = "8000"
+
+[[services]]
+name = "ballarat-db-prod"
+image = "postgres:15-alpine"
+
+[services.variables]
+POSTGRES_DB = "ballarat_tools_prod"
+POSTGRES_USER = "ballarat_prod"
+POSTGRES_PASSWORD = { $env = "DATABASE_PASSWORD" }
+
+[[services]]
+name = "ballarat-redis-prod"
+image = "redis:7-alpine"
+
+[services.variables]
+REDIS_PASSWORD = { $env = "REDIS_PASSWORD" }

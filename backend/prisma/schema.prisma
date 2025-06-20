@@ -1,0 +1,284 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  MEMBER
+  VOLUNTEER
+  ADMIN
+}
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+  LOST
+  DAMAGED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ToolCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  NEEDS_REPAIR
+  OUT_OF_SERVICE
+}
+
+enum ToolStatus {
+  AVAILABLE
+  CHECKED_OUT
+  RESERVED
+  MAINTENANCE
+  RETIRED
+}
+
+enum MembershipTier {
+  BASIC     // $55 + GST = $60.50
+  PREMIUM   // $70 + GST = $77.00
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentType {
+  MEMBERSHIP_FEE
+  LATE_FEE
+  DAMAGE_FEE
+  REPLACEMENT_FEE
+}
+
+// Models
+model User {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  password          String
+  firstName         String
+  lastName          String
+  phone             String?
+  address           String?
+  suburb            String?
+  postcode          String?
+  state             String?
+  role              UserRole          @default(MEMBER)
+  isActive          Boolean           @default(true)
+  emailVerified     Boolean           @default(false)
+  emailVerifiedAt   DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  member            Member?
+  loans             Loan[]
+  reservations      Reservation[]
+  payments          Payment[]
+
+  @@map("users")
+}
+
+model Member {
+  id                String            @id @default(cuid())
+  userId            String            @unique
+  membershipNumber  String            @unique
+  tier              MembershipTier    @default(BASIC)
+  joinedAt          DateTime          @default(now())
+  expiresAt         DateTime
+  isActive          Boolean           @default(true)
+  maxLoans          Int               @default(3) // Basic: 3, Premium: 5
+  maxReservations   Int               @default(2) // Basic: 2, Premium: 4
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("members")
+}
+
+model ToolCategory {
+  id                String            @id @default(cuid())
+  name              String            @unique
+  description       String?
+  parentId          String?
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  parent            ToolCategory?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children          ToolCategory[]    @relation("CategoryHierarchy")
+  tools             Tool[]
+
+  @@map("tool_categories")
+}
+
+model Tool {
+  id                String            @id @default(cuid())
+  name              String
+  description       String?
+  brand             String?
+  model             String?
+  serialNumber      String?           @unique
+  barcode           String?           @unique
+  categoryId        String
+  condition         ToolCondition     @default(GOOD)
+  status            ToolStatus        @default(AVAILABLE)
+  location          String?           // Storage location
+  purchaseDate      DateTime?
+  purchasePrice     Decimal?          @db.Decimal(10, 2)
+  replacementValue  Decimal?          @db.Decimal(10, 2)
+  loanPeriodDays    Int               @default(7) // Default loan period
+  maxLoanDays       Int               @default(14) // Maximum loan period
+  requiresDeposit   Boolean           @default(false)
+  depositAmount     Decimal?          @db.Decimal(10, 2)
+  instructions      String?           // Usage instructions
+  safetyNotes       String?           // Safety warnings
+  imageUrl          String?
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  category          ToolCategory      @relation(fields: [categoryId], references: [id])
+  loans             Loan[]
+  reservations      Reservation[]
+  maintenanceRecords MaintenanceRecord[]
+
+  @@map("tools")
+}
+
+model Loan {
+  id                String            @id @default(cuid())
+  userId            String
+  toolId            String
+  loanedAt          DateTime          @default(now())
+  dueDate           DateTime
+  returnedAt        DateTime?
+  status            LoanStatus        @default(ACTIVE)
+  notes             String?           // Staff notes
+  conditionOut      ToolCondition     // Condition when loaned
+  conditionIn       ToolCondition?    // Condition when returned
+  lateFees          Decimal           @default(0) @db.Decimal(10, 2)
+  damageFees        Decimal           @default(0) @db.Decimal(10, 2)
+  checkedOutBy      String?           // Staff member who processed checkout
+  checkedInBy       String?           // Staff member who processed return
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id])
+  tool              Tool              @relation(fields: [toolId], references: [id])
+
+  @@map("loans")
+}
+
+model Reservation {
+  id                String            @id @default(cuid())
+  userId            String
+  toolId            String
+  reservedAt        DateTime          @default(now())
+  startDate         DateTime          // When they want to pick up
+  endDate           DateTime          // When they plan to return
+  status            ReservationStatus @default(PENDING)
+  notes             String?           // User notes
+  staffNotes        String?           // Staff notes
+  notificationSent  Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id])
+  tool              Tool              @relation(fields: [toolId], references: [id])
+
+  @@map("reservations")
+}
+
+model Payment {
+  id                String            @id @default(cuid())
+  userId            String
+  type              PaymentType
+  amount            Decimal           @db.Decimal(10, 2)
+  gstAmount         Decimal           @db.Decimal(10, 2) // GST component (10%)
+  totalAmount       Decimal           @db.Decimal(10, 2) // amount + gstAmount
+  currency          String            @default("AUD")
+  status            PaymentStatus     @default(PENDING)
+  stripePaymentId   String?           @unique
+  stripeSessionId   String?           @unique
+  description       String?
+  dueDate           DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id])
+
+  @@map("payments")
+}
+
+model MaintenanceRecord {
+  id                String            @id @default(cuid())
+  toolId            String
+  type              String            // "repair", "service", "inspection"
+  description       String
+  cost              Decimal?          @db.Decimal(10, 2)
+  performedBy       String?           // Staff member or contractor
+  scheduledDate     DateTime?
+  completedDate     DateTime?
+  nextServiceDate   DateTime?
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  tool              Tool              @relation(fields: [toolId], references: [id])
+
+  @@map("maintenance_records")
+}
+
+// Audit log for tracking changes
+model AuditLog {
+  id                String            @id @default(cuid())
+  userId            String?           // Who made the change
+  action            String            // CREATE, UPDATE, DELETE
+  tableName         String            // Which table was affected
+  recordId          String            // ID of the affected record
+  oldValues         Json?             // Previous values
+  newValues         Json?             // New values
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime          @default(now())
+
+  @@map("audit_logs")
+}
+
+// System configuration
+model SystemConfig {
+  id                String            @id @default(cuid())
+  key               String            @unique
+  value             String
+  description       String?
+  updatedAt         DateTime          @updatedAt
+
+  @@map("system_config")
+}
