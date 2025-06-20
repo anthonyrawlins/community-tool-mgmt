@@ -32,8 +32,8 @@ COPY backend/prisma ./prisma
 COPY backend/tsconfig.json ./
 COPY backend/docker-entrypoint.sh ./docker-entrypoint.sh
 
-# Build the application if needed (for TypeScript compilation, etc.)
-RUN npm run build || true
+# Build the application (compile TypeScript to JavaScript)
+RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
@@ -45,9 +45,8 @@ ENV PORT=8000
 # Copy production dependencies
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist || true
-COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+# Copy built application (compiled JavaScript)
+COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
@@ -68,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 # Use dumb-init to handle signals properly and custom entrypoint for secrets
 ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]
