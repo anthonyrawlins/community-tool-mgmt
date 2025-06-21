@@ -6,7 +6,7 @@ import { TableFilters, TableSort, BulkAction } from '@/types';
 interface Column<T> {
   key: keyof T | string;
   header: string;
-  render?: (value: any, item: T) => React.ReactNode;
+  render?: (value: unknown, item: T) => React.ReactNode;
   sortable?: boolean;
   width?: string;
 }
@@ -37,7 +37,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   loading = false,
@@ -48,7 +48,6 @@ export function DataTable<T extends Record<string, any>>({
   onBulkAction,
   bulkActions = [],
   searchable = true,
-  filterable = false,
   selectable = false,
   rowId = 'id' as keyof T,
   emptyMessage = 'No data available'
@@ -56,7 +55,6 @@ export function DataTable<T extends Record<string, any>>({
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [currentSort, setCurrentSort] = useState<TableSort | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState<TableFilters>({});
 
   const handleSort = (field: string) => {
     if (!onSort) return;
@@ -208,7 +206,7 @@ export function DataTable<T extends Record<string, any>>({
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => {
+              data.map((item) => {
                 const id = String(item[rowId]);
                 return (
                   <tr key={id} className="hover:bg-gray-50">

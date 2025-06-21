@@ -123,7 +123,7 @@ export default function CatalogPage() {
                 </div>
               )}
               {!hasMore && tools.length > 0 && (
-                <p className="text-gray-500">You've reached the end of our catalog!</p>
+                <p className="text-gray-500">You&apos;ve reached the end of our catalog!</p>
               )}
             </div>
           </>

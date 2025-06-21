@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DashboardData, DashboardStats, Loan, Reservation, PaymentRecord } from '@/types';
+import { DashboardData, DashboardStats } from '@/types';
 import { ApiClient } from '@/lib/api';
 
 export function useDashboard() {

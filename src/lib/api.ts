@@ -9,10 +9,14 @@ import {
   LoansResponse,
   Reservation,
   ReservationsResponse,
-  PaymentRecord,
   PaymentsResponse,
   DashboardData,
   ReservationForm,
+  AvailabilityResponse,
+  ActivityItem,
+  PaymentSessionResponse,
+  MaintenanceRecord,
+  PaginationInfo,
   ProfileUpdateForm,
   AdminDashboardStats,
   AdminUser,
@@ -45,7 +49,7 @@ export class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     // Get token from localStorage if available
-    let headers: Record<string, string> = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...options.headers as Record<string, string>,
     };
@@ -101,9 +105,9 @@ export class ApiClient {
     toolId: string, 
     startDate: string, 
     endDate: string
-  ): Promise<ApiResponse<any>> {
+  ): Promise<ApiResponse<AvailabilityResponse>> {
     const params = new URLSearchParams({ startDate, endDate });
-    return this.request<ApiResponse<any>>(`/tools/${toolId}/availability?${params}`);
+    return this.request<ApiResponse<AvailabilityResponse>>(`/tools/${toolId}/availability?${params}`);
   }
 
   // User Profile API calls
@@ -171,8 +175,8 @@ export class ApiClient {
     });
   }
 
-  static async cancelReservation(id: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/reservations/${id}`, {
+  static async cancelReservation(id: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/reservations/${id}`, {
       method: 'DELETE',
     });
   }
@@ -189,8 +193,8 @@ export class ApiClient {
     return this.request<ApiResponse<PaymentsResponse>>(endpoint);
   }
 
-  static async createPaymentSession(amount: number, type: string, description: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>('/payments/create-session', {
+  static async createPaymentSession(amount: number, type: string, description: string): Promise<ApiResponse<PaymentSessionResponse>> {
+    return this.request<ApiResponse<PaymentSessionResponse>>('/payments/create-session', {
       method: 'POST',
       body: JSON.stringify({ amount, type, description }),
     });
@@ -212,12 +216,12 @@ export class ApiClient {
   }
 
   // Admin Activity Feed
-  static async getAdminActivity(limit = 50, offset = 0): Promise<ApiResponse<{ activities: any[] }>> {
+  static async getAdminActivity(limit = 50, offset = 0): Promise<ApiResponse<{ activities: ActivityItem[] }>> {
     const params = new URLSearchParams();
     params.append('limit', limit.toString());
     params.append('offset', offset.toString());
     
-    return this.request<ApiResponse<{ activities: any[] }>>(`/admin/activity?${params}`);
+    return this.request<ApiResponse<{ activities: ActivityItem[] }>>(`/admin/activity?${params}`);
   }
 
   // Send overdue reminders
@@ -239,15 +243,15 @@ export class ApiClient {
     });
   }
 
-  static async suspendUser(userId: string, reason: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/users/${userId}/suspend`, {
+  static async suspendUser(userId: string, reason: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/users/${userId}/suspend`, {
       method: 'PUT',
       body: JSON.stringify({ reason }),
     });
   }
 
-  static async reactivateUser(userId: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/users/${userId}/reactivate`, {
+  static async reactivateUser(userId: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/users/${userId}/reactivate`, {
       method: 'PUT',
     });
   }
@@ -267,21 +271,21 @@ export class ApiClient {
     });
   }
 
-  static async deleteTool(id: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/tools/${id}`, {
+  static async deleteTool(id: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/tools/${id}`, {
       method: 'DELETE',
     });
   }
 
-  static async bulkUpdateTools(action: BulkAction): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>('/admin/tools/bulk', {
+  static async bulkUpdateTools(action: BulkAction): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>('/admin/tools/bulk', {
       method: 'PUT',
       body: JSON.stringify(action),
     });
   }
 
   // Advanced Tool Search and Filtering
-  static async getToolsAdvanced(filters: any = {}, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<ToolsResponse>> {
+  static async getToolsAdvanced(filters: ToolFilters = {}, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<ToolsResponse>> {
     const params = new URLSearchParams();
     
     Object.entries(filters).forEach(([key, value]) => {
@@ -305,35 +309,35 @@ export class ApiClient {
   }
 
   // Tool Maintenance Management
-  static async getToolMaintenance(toolId: string): Promise<ApiResponse<{ records: any[] }>> {
-    return this.request<ApiResponse<{ records: any[] }>>(`/tools/${toolId}/maintenance`);
+  static async getToolMaintenance(toolId: string): Promise<ApiResponse<{ records: MaintenanceRecord[] }>> {
+    return this.request<ApiResponse<{ records: MaintenanceRecord[] }>>(`/tools/${toolId}/maintenance`);
   }
 
-  static async addMaintenanceRecord(toolId: string, data: any): Promise<ApiResponse<{ record: any }>> {
-    return this.request<ApiResponse<{ record: any }>>(`/tools/${toolId}/maintenance`, {
+  static async addMaintenanceRecord(toolId: string, data: Partial<MaintenanceRecord>): Promise<ApiResponse<{ record: MaintenanceRecord }>> {
+    return this.request<ApiResponse<{ record: MaintenanceRecord }>>(`/tools/${toolId}/maintenance`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  static async updateMaintenanceRecord(toolId: string, recordId: string, data: any): Promise<ApiResponse<{ record: any }>> {
-    return this.request<ApiResponse<{ record: any }>>(`/tools/${toolId}/maintenance/${recordId}`, {
+  static async updateMaintenanceRecord(toolId: string, recordId: string, data: Partial<MaintenanceRecord>): Promise<ApiResponse<{ record: MaintenanceRecord }>> {
+    return this.request<ApiResponse<{ record: MaintenanceRecord }>>(`/tools/${toolId}/maintenance/${recordId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
   // Tool Analytics and Reports
-  static async getToolAnalytics(startDate?: string, endDate?: string): Promise<ApiResponse<any>> {
+  static async getToolAnalytics(startDate?: string, endDate?: string): Promise<ApiResponse<{ success: boolean }>> {
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    return this.request<ApiResponse<any>>(`/admin/tools/analytics?${params}`);
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/tools/analytics?${params}`);
   }
 
-  static async getToolUtilization(period: string = '30d'): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/tools/utilization?period=${period}`);
+  static async getToolUtilization(period: string = '30d'): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/tools/utilization?period=${period}`);
   }
 
   // Admin Category Management
@@ -351,14 +355,14 @@ export class ApiClient {
     });
   }
 
-  static async deleteCategory(id: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/categories/${id}`, {
+  static async deleteCategory(id: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/categories/${id}`, {
       method: 'DELETE',
     });
   }
 
   // Admin Loan Management
-  static async getAdminLoans(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ loans: AdminLoan[], pagination: any }>> {
+  static async getAdminLoans(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ loans: AdminLoan[], pagination: PaginationInfo }>> {
     const params = new URLSearchParams();
     
     if (filters) {
@@ -380,7 +384,7 @@ export class ApiClient {
     const queryString = params.toString();
     const endpoint = queryString ? `/admin/loans?${queryString}` : '/admin/loans';
     
-    return this.request<ApiResponse<{ loans: AdminLoan[], pagination: any }>>(endpoint);
+    return this.request<ApiResponse<{ loans: AdminLoan[], pagination: PaginationInfo }>>(endpoint);
   }
 
   static async checkoutLoan(data: LoanCheckoutForm): Promise<ApiResponse<{ loan: AdminLoan }>> {
@@ -397,14 +401,14 @@ export class ApiClient {
     });
   }
 
-  static async processOverdueLoans(): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>('/admin/loans/process-overdue', {
+  static async processOverdueLoans(): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>('/admin/loans/process-overdue', {
       method: 'POST',
     });
   }
 
   // Admin Reservation Management
-  static async getAdminReservations(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ reservations: AdminReservation[], pagination: any }>> {
+  static async getAdminReservations(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ reservations: AdminReservation[], pagination: PaginationInfo }>> {
     const params = new URLSearchParams();
     
     if (filters) {
@@ -426,7 +430,7 @@ export class ApiClient {
     const queryString = params.toString();
     const endpoint = queryString ? `/admin/reservations?${queryString}` : '/admin/reservations';
     
-    return this.request<ApiResponse<{ reservations: AdminReservation[], pagination: any }>>(endpoint);
+    return this.request<ApiResponse<{ reservations: AdminReservation[], pagination: PaginationInfo }>>(endpoint);
   }
 
   static async approveReservation(id: string): Promise<ApiResponse<{ reservation: AdminReservation }>> {
@@ -435,15 +439,15 @@ export class ApiClient {
     });
   }
 
-  static async denyReservation(id: string, reason: string): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/reservations/${id}/deny`, {
+  static async denyReservation(id: string, reason: string): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/reservations/${id}/deny`, {
       method: 'PUT',
       body: JSON.stringify({ reason }),
     });
   }
 
   // Admin Payment Management
-  static async getAdminPayments(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ payments: AdminPayment[], pagination: any }>> {
+  static async getAdminPayments(filters?: TableFilters, sort?: TableSort, page = 1, limit = 20): Promise<ApiResponse<{ payments: AdminPayment[], pagination: PaginationInfo }>> {
     const params = new URLSearchParams();
     
     if (filters) {
@@ -465,11 +469,11 @@ export class ApiClient {
     const queryString = params.toString();
     const endpoint = queryString ? `/admin/payments?${queryString}` : '/admin/payments';
     
-    return this.request<ApiResponse<{ payments: AdminPayment[], pagination: any }>>(endpoint);
+    return this.request<ApiResponse<{ payments: AdminPayment[], pagination: PaginationInfo }>>(endpoint);
   }
 
-  static async processRefund(paymentId: string, amount?: number): Promise<ApiResponse<any>> {
-    return this.request<ApiResponse<any>>(`/admin/payments/${paymentId}/refund`, {
+  static async processRefund(paymentId: string, amount?: number): Promise<ApiResponse<{ success: boolean }>> {
+    return this.request<ApiResponse<{ success: boolean }>>(`/admin/payments/${paymentId}/refund`, {
       method: 'POST',
       body: JSON.stringify({ amount }),
     });
@@ -528,7 +532,7 @@ export class ApiClient {
     
     const url = `${this.baseUrl}/admin/reports/export?${params}`;
     
-    let headers: Record<string, string> = {};
+    const headers: Record<string, string> = {};
 
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');
@@ -564,7 +568,7 @@ export class ApiClient {
     formData.append('file', file);
     formData.append('type', type);
 
-    let headers: Record<string, string> = {};
+    const headers: Record<string, string> = {};
 
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');
@@ -592,7 +596,7 @@ export class ApiClient {
     const formData = new FormData();
     formData.append('file', file);
 
-    let headers: Record<string, string> = {};
+    const headers: Record<string, string> = {};
 
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');
@@ -621,7 +625,7 @@ export class ApiClient {
     
     const url = `${this.baseUrl}/admin/tools/export?${params}`;
     
-    let headers: Record<string, string> = {};
+    const headers: Record<string, string> = {};
 
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');

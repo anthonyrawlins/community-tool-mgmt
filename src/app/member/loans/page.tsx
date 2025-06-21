@@ -188,7 +188,7 @@ export default function LoansPage() {
                   ].map(({ key, label }) => (
                     <button
                       key={key}
-                      onClick={() => setFilter(key as any)}
+                      onClick={() => setFilter(key as 'all' | 'active' | 'returned' | 'overdue')}
                       className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                         filter === key
                           ? 'bg-blue-100 text-blue-700 border border-blue-300'

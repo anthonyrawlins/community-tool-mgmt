@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { FormField } from '@/components/admin/FormField';
 import { ApiClient } from '@/lib/api';
-import { AdminLoan, LoanCheckinForm, Tool, AdminUser } from '@/types';
+import { AdminLoan, LoanCheckinForm } from '@/types';
 
 export default function LoanProcessPage() {
   const [activeLoans, setActiveLoans] = useState<AdminLoan[]>([]);
@@ -185,7 +185,15 @@ export default function LoanProcessPage() {
                         className={`p-4 hover:bg-gray-50 cursor-pointer ${
                           selectedLoan?.id === loan.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
                         } ${isOverdue ? 'bg-red-50' : ''}`}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => handleLoanSelect(loan)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleLoanSelect(loan);
+                          }
+                        }}
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -303,7 +311,7 @@ export default function LoanProcessPage() {
                   <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
                     <h4 className="font-medium text-yellow-900">Total Fees: ${(checkinForm.lateFees + checkinForm.damageFees).toFixed(2)}</h4>
                     <p className="text-sm text-yellow-700 mt-1">
-                      These fees will be added to the member's account and must be paid before future loans.
+                      These fees will be added to the member&apos;s account and must be paid before future loans.
                     </p>
                   </div>
                 )}

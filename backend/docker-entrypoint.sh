@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # Read secrets from files if they exist
@@ -28,13 +28,16 @@ if [ -n "$REDIS_PASSWORD" ]; then
     export REDIS_URL="redis://:${REDIS_PASSWORD}@redis:6379"
 fi
 
-# Run database migrations
-echo "Running database migrations..."
-npx prisma migrate deploy || echo "Migration failed or no migrations to run"
-
-# Generate Prisma client
-echo "Generating Prisma client..."
-npx prisma generate || echo "Client generation failed"
+# Run database migrations (only if DATABASE_URL is set)
+if [ -n "$DATABASE_URL" ]; then
+    echo "Running database migrations..."
+    npx prisma migrate deploy || echo "Migration failed or no migrations to run"
+    
+    echo "Generating Prisma client..."
+    npx prisma generate || echo "Client generation failed"
+else
+    echo "WARNING: DATABASE_URL not set, skipping migrations"
+fi
 
 # Start the application
 echo "Starting application..."

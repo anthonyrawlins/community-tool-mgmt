@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { DataTable } from '@/components/admin/DataTable';
 import { ApiClient } from '@/lib/api';
-import { AdminUser, TableFilters, TableSort, BulkAction } from '@/types';
+import { AdminUser, TableColumn } from '@/types';
 
 export default function AdminMembersPage() {
   const [members, setMembers] = useState<AdminUser[]>([]);
@@ -76,12 +76,12 @@ export default function AdminMembersPage() {
     );
   };
 
-  const columns = [
+  const columns: TableColumn<AdminUser>[] = [
     {
       key: 'name',
       header: 'Member',
       sortable: true,
-      render: (value: any, member: AdminUser) => (
+      render: (value: unknown, member: AdminUser) => (
         <div>
           <div className="font-medium text-gray-900">
             {member.firstName} {member.lastName}
@@ -97,7 +97,7 @@ export default function AdminMembersPage() {
       key: 'membershipStatus',
       header: 'Status',
       sortable: true,
-      render: (value: string) => getMembershipStatusBadge(value)
+      render: (value: unknown) => getMembershipStatusBadge(String(value))
     },
     {
       key: 'membershipType',
@@ -112,7 +112,7 @@ export default function AdminMembersPage() {
       key: 'membershipExpiry',
       header: 'Expires',
       sortable: true,
-      render: (value: any, member: AdminUser) => {
+      render: (value: unknown, member: AdminUser) => {
         const expiry = member.member?.expiresAt || member.membershipExpiry;
         if (!expiry) return '-';
         
@@ -139,7 +139,7 @@ export default function AdminMembersPage() {
       key: 'activity',
       header: 'Activity',
       sortable: false,
-      render: (value: any, member: AdminUser) => (
+      render: (value: unknown, member: AdminUser) => (
         <div className="text-sm">
           <div>Loans: {member._count?.loans || 0}</div>
           <div>Reservations: {member._count?.reservations || 0}</div>
@@ -166,7 +166,7 @@ export default function AdminMembersPage() {
       key: 'actions',
       header: 'Actions',
       sortable: false,
-      render: (value: any, member: AdminUser) => (
+      render: (value: unknown, member: AdminUser) => (
         <div className="flex space-x-2">
           <a
             href={`/admin/members/${member.id}`}

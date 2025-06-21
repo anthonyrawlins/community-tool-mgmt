@@ -62,7 +62,6 @@ services:
       CORS_ORIGIN: https://ballarat-tool-library.home.deepblack.cloud
       PORT: 8000
       API_VERSION: v1
-      DATABASE_URL: postgresql://ballarat_tool_library_user:CHANGEME_secure_db_password_123!@db:5432/ballarat_tool_library?schema=public
     secrets:
       - jwt_secret
       - stripe_secret_key
@@ -81,14 +80,25 @@ services:
         delay: 10s
         order: start-first
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
-        max_attempts: 3
+        max_attempts: 0
       resources:
         limits:
           memory: 512M
         reservations:
           memory: 256M
+      labels:
+        # Traefik configuration for backend API
+        - traefik.enable=true
+        - traefik.docker.network=tengig
+        
+        # API Backend routing - HTTPS with Let's Encrypt
+        - traefik.http.routers.ballarat-tool-library-api.rule=Host(`ballarat-tool-library.home.deepblack.cloud`) && PathPrefix(`/api`)
+        - traefik.http.routers.ballarat-tool-library-api.entrypoints=web-secured
+        - traefik.http.routers.ballarat-tool-library-api.tls.certresolver=letsencryptresolver
+        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.server.port=8000
+        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.passhostheader=true
 
   # Frontend (Next.js)
   frontend:
@@ -131,14 +141,6 @@ services:
         - traefik.http.routers.ballarat-tool-library-frontend.tls.certresolver=letsencryptresolver
         - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.server.port=3000
         - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.passhostheader=true
-        
-        # API Backend routing - HTTPS with Let's Encrypt
-        - traefik.http.routers.ballarat-tool-library-api.rule=Host(`ballarat-tool-library.home.deepblack.cloud`) && PathPrefix(`/api`)
-        - traefik.http.routers.ballarat-tool-library-api.entrypoints=web-secured
-        - traefik.http.routers.ballarat-tool-library-api.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.ballarat-tool-library-api.service=ballarat-tool-library-backend
-        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.server.port=8000
-        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.passhostheader=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
@@ -162,12 +164,12 @@ volumes:
 
 secrets:
   db_password:
-    file: ./secrets/db_password.txt
+    file: /rust/containers/ballarat-tool-library-secrets/db_password.txt
   redis_password:
-    file: ./secrets/redis_password.txt
+    file: /rust/containers/ballarat-tool-library-secrets/redis_password.txt
   jwt_secret:
-    file: ./secrets/jwt_secret.txt
+    file: /rust/containers/ballarat-tool-library-secrets/jwt_secret.txt
   stripe_secret_key:
-    file: ./secrets/stripe_secret_key.txt
+    file: /rust/containers/ballarat-tool-library-secrets/stripe_secret_key.txt
   stripe_publishable_key:
-    file: ./secrets/stripe_publishable_key.txt
+    file: /rust/containers/ballarat-tool-library-secrets/stripe_publishable_key.txt

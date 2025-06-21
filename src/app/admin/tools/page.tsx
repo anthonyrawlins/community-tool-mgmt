@@ -36,11 +36,11 @@ export default function AdminToolsPage() {
     setShowBulkActions(selectedTools.length > 0);
   }, [selectedTools]);
 
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     await Promise.all([loadTools(), loadCategories()]);
-  };
+  }, [loadTools, loadCategories]);
 
-  const loadTools = async () => {
+  const loadTools = useCallback(async () => {
     try {
       setLoading(true);
       const response = await ApiClient.getTools(filters, pagination.page, pagination.limit);
@@ -56,16 +56,16 @@ export default function AdminToolsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.page, pagination.limit]);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const response = await ApiClient.getCategories();
       setCategories(response.data.categories);
     } catch (error) {
       console.error('Failed to load categories:', error);
     }
-  };
+  }, []);
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, page }));
@@ -118,11 +118,6 @@ export default function AdminToolsPage() {
     }
   };
 
-  const handleImportSuccess = () => {
-    loadTools();
-    setSuccessMessage('Tools imported successfully');
-    setTimeout(() => setSuccessMessage(null), 5000);
-  };
 
   const statsData = {
     available: tools.filter(t => t.status === 'AVAILABLE').length,

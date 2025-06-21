@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { MainLayout } from "@/components/layout/MainLayout";
 import { MemberLayout } from "@/components/member/MemberLayout";
 import { StatsCard } from "@/components/member/StatsCard";
@@ -18,30 +18,23 @@ import Link from "next/link";
 export default function MemberPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { dashboardData, loading: dashboardLoading, error, refresh } = useDashboard();
-  const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
 
   const handleRenewLoan = async (loanId: string) => {
-    setActionLoading(prev => ({ ...prev, [`loan-${loanId}`]: true }));
     try {
       await ApiClient.renewLoan(loanId);
       refresh(); // Refresh dashboard data
     } catch (error) {
       console.error('Failed to renew loan:', error);
       // Here you would typically show a toast notification
-    } finally {
-      setActionLoading(prev => ({ ...prev, [`loan-${loanId}`]: false }));
     }
   };
 
   const handleCancelReservation = async (reservationId: string) => {
-    setActionLoading(prev => ({ ...prev, [`reservation-${reservationId}`]: true }));
     try {
       await ApiClient.cancelReservation(reservationId);
       refresh(); // Refresh dashboard data
     } catch (error) {
       console.error('Failed to cancel reservation:', error);
-    } finally {
-      setActionLoading(prev => ({ ...prev, [`reservation-${reservationId}`]: false }));
     }
   };
 

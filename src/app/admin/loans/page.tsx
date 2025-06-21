@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { DataTable } from '@/components/admin/DataTable';
 import { ApiClient } from '@/lib/api';
-import { AdminLoan, TableFilters, TableSort } from '@/types';
+import { AdminLoan, TableColumn } from '@/types';
 
 export default function AdminLoansPage() {
   const [loans, setLoans] = useState<AdminLoan[]>([]);
@@ -19,9 +19,9 @@ export default function AdminLoansPage() {
 
   useEffect(() => {
     loadLoans();
-  }, [pagination.page]);
+  }, [pagination.page, pagination.limit]);
 
-  const loadLoans = async () => {
+  const loadLoans = useCallback(async () => {
     try {
       setLoading(true);
       const response = await ApiClient.getAdminLoans({}, undefined, pagination.page, pagination.limit);
@@ -39,7 +39,7 @@ export default function AdminLoansPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit]);
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, page }));
@@ -77,20 +77,20 @@ export default function AdminLoansPage() {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  const columns = [
+  const columns: TableColumn<AdminLoan>[] = [
     {
       key: 'id',
       header: 'Loan ID',
       sortable: true,
-      render: (value: string) => (
-        <span className="font-mono text-sm">{value.slice(-8)}</span>
+      render: (value: unknown) => (
+        <span className="font-mono text-sm">{String(value).slice(-8)}</span>
       )
     },
     {
       key: 'user',
       header: 'Member',
       sortable: true,
-      render: (value: any, loan: AdminLoan) => (
+      render: (value: unknown, loan: AdminLoan) => (
         <div>
           <div className="font-medium text-gray-900">
             {loan.user.firstName} {loan.user.lastName}
@@ -103,7 +103,7 @@ export default function AdminLoansPage() {
       key: 'tool',
       header: 'Tool',
       sortable: true,
-      render: (value: any, loan: AdminLoan) => (
+      render: (value: unknown, loan: AdminLoan) => (
         <div>
           <div className="font-medium text-gray-900">{loan.tool.name}</div>
           {loan.tool.brand && loan.tool.model && (
@@ -118,9 +118,9 @@ export default function AdminLoansPage() {
       key: 'loanedAt',
       header: 'Loaned',
       sortable: true,
-      render: (value: string) => (
+      render: (value: unknown) => (
         <div className="text-sm">
-          {new Date(value).toLocaleDateString()}
+          {new Date(String(value)).toLocaleDateString()}
         </div>
       )
     },
@@ -157,7 +157,7 @@ export default function AdminLoansPage() {
       key: 'fees',
       header: 'Fees',
       sortable: false,
-      render: (value: any, loan: AdminLoan) => {
+      render: (value: unknown, loan: AdminLoan) => {
         const totalFees = (loan.lateFees || 0) + (loan.damageFees || 0);
         return totalFees > 0 ? (
           <div className="text-sm">
@@ -178,7 +178,7 @@ export default function AdminLoansPage() {
       key: 'actions',
       header: 'Actions',
       sortable: false,
-      render: (value: any, loan: AdminLoan) => (
+      render: (value: unknown, loan: AdminLoan) => (
         <div className="flex space-x-2">
           {loan.status === 'ACTIVE' ? (
             <a

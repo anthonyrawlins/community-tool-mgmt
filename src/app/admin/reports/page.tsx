@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { Chart } from '@/components/admin/Chart';
@@ -24,7 +24,7 @@ export default function AdminReportsPage() {
     loadReports();
   }, []);
 
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     try {
       setLoading(true);
       const [revenueRes, utilizationRes, memberRes] = await Promise.all([
@@ -42,7 +42,7 @@ export default function AdminReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange.startDate, dateRange.endDate]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -303,7 +303,7 @@ export default function AdminReportsPage() {
             <div className="p-6">
               {utilizationReport?.topTools ? (
                 <div className="space-y-3">
-                  {utilizationReport.topTools.slice(0, 5).map((tool, index) => (
+                  {utilizationReport.topTools.slice(0, 5).map((tool) => (
                     <div key={tool.tool.id} className="flex justify-between items-center">
                       <div>
                         <div className="font-medium text-gray-900">{tool.tool.name}</div>

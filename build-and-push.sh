@@ -18,10 +18,21 @@ echo "Version: $VERSION"
 echo ""
 
 # Check if logged in to Docker Hub
-if ! docker info | grep -q "Username:"; then
+if ! docker info 2>/dev/null | grep -q "Username:"; then
     echo "🔐 Please login to Docker Hub first:"
     echo "   docker login"
     exit 1
+fi
+
+# Check if we're on a swarm manager node
+SWARM_ROLE=$(docker info --format '{{.Swarm.ControlAvailable}}' 2>/dev/null)
+if [ "$SWARM_ROLE" = "true" ]; then
+    echo "🔀 Detected Docker Swarm manager node"
+    echo "   Will deploy stack after pushing images"
+    DEPLOY_AFTER_PUSH=true
+else
+    echo "💻 Building on local machine"
+    DEPLOY_AFTER_PUSH=false
 fi
 
 # Build frontend image
@@ -55,4 +66,14 @@ echo "1. Update docker-compose.swarm.yml with your Docker Hub username"
 echo "2. Deploy to swarm with: docker stack deploy -c docker-compose.swarm.yml ballarat-tool-library"
 echo ""
 echo "🌐 After deployment, service will be available at:"
-echo "   https://tools.home.deepblack.cloud"
+echo "   https://ballarat-tool-library.home.deepblack.cloud"
+
+# Auto-deploy if on swarm manager
+if [ "$DEPLOY_AFTER_PUSH" = "true" ]; then
+    echo ""
+    echo "🚀 Auto-deploying to Docker Swarm..."
+    docker stack deploy -c docker-compose.swarm.yml ballarat-tool-library
+    echo ""
+    echo "📊 Check deployment status:"
+    echo "   docker stack ps ballarat-tool-library"
+fi

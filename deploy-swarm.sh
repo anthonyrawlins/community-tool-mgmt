@@ -24,8 +24,8 @@ fi
 
 # Build images
 echo "🔨 Building Docker images..."
-docker build -f Dockerfile.frontend -t ballarat-tools-frontend:latest .
-docker build -f Dockerfile.backend -t ballarat-tools-backend:latest .
+docker build -f Dockerfile.frontend -t ballarat-tool-library-frontend:latest .
+docker build -f Dockerfile.backend -t ballarat-tool-library-backend:latest .
 
 # Check secrets exist and warn about defaults
 echo "🔐 Checking secrets configuration..."
@@ -62,24 +62,24 @@ fi
 
 # Deploy stack
 echo "📦 Deploying stack to swarm..."
-docker stack deploy -c docker-compose.swarm.yml ballarat-tools
+docker stack deploy -c docker-compose.swarm.yml ballarat-tool-library
 
 echo ""
 echo "✅ Deployment initiated successfully!"
 echo ""
 echo "📊 Monitor deployment status:"
-echo "   docker stack services ballarat-tools"
-echo "   docker stack ps ballarat-tools"
+echo "   docker stack services ballarat-tool-library"
+echo "   docker stack ps ballarat-tool-library"
 echo ""
 echo "🌐 Service will be available at:"
-echo "   https://tools.home.deepblack.cloud"
+echo "   https://ballarat-tool-library.home.deepblack.cloud"
 echo ""
 echo "🔍 View logs:"
-echo "   docker service logs ballarat-tools_frontend"
-echo "   docker service logs ballarat-tools_backend"
-echo "   docker service logs ballarat-tools_db"
+echo "   docker service logs ballarat-tool-library_frontend"
+echo "   docker service logs ballarat-tool-library_backend"
+echo "   docker service logs ballarat-tool-library_db"
 echo ""
 echo "🗑️  To remove stack:"
-echo "   docker stack rm ballarat-tools"
+echo "   docker stack rm ballarat-tool-library"
 echo ""
 echo "⏱️  Note: Services may take a few moments to become healthy and available."

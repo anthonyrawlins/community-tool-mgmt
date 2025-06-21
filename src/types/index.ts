@@ -1,3 +1,5 @@
+import React from 'react';
+
 // User and Member types
 export interface User {
   id: string;
@@ -530,7 +532,7 @@ export interface TableFilters {
   dateFrom?: string;
   dateTo?: string;
   category?: string;
-  [key: string]: any;
+  [key: string]: string | boolean | undefined;
 }
 
 export interface TableSort {
@@ -541,5 +543,64 @@ export interface TableSort {
 export interface BulkAction {
   action: string;
   selectedIds: string[];
-  data?: any;
+  data?: Record<string, unknown>;
+}
+
+// Table column definition for DataTable components
+export interface TableColumn<T = Record<string, unknown>> {
+  key: string;
+  header: string;
+  sortable?: boolean;
+  render?: (value: unknown, item: T) => React.ReactNode;
+}
+
+// Generic table data item interface
+export interface TableDataItem {
+  id: string;
+  [key: string]: unknown;
+}
+
+// API response interfaces for better type safety
+export interface AvailabilityResponse {
+  available: boolean;
+  conflicts?: Booking[];
+}
+
+export interface ActivityItem {
+  id: string;
+  type: string;
+  description: string;
+  timestamp: Date;
+  userId?: string;
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface PaymentSessionResponse {
+  sessionId: string;
+  url: string;
+  clientSecret?: string;
+}
+
+export interface MaintenanceRecord {
+  id: string;
+  toolId: string;
+  type: 'routine' | 'repair' | 'inspection' | 'cleaning';
+  description: string;
+  cost?: number;
+  performedBy: string;
+  performedAt: Date;
+  nextDueDate?: Date;
+  notes?: string;
+  attachments?: string[];
+}
+
+export interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
 }

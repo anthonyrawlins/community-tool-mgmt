@@ -216,11 +216,19 @@ Hammer,16oz claw hammer,Stanley,51-616,345678901234,DEF456,cat-hand-tools,GOOD,A
                 ? 'border-green-300 bg-green-50'
                 : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
             } ${importing ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
+            role="button"
+            tabIndex={0}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
           >
             <input
               ref={fileInputRef}
