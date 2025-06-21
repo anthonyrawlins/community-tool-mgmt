@@ -5,8 +5,8 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: ballarat_tools
-      POSTGRES_USER: ballarat_user
+      POSTGRES_DB: ballarat_tool_library
+      POSTGRES_USER: ballarat_tool_library_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password
@@ -20,7 +20,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.role == manager
+          - node.hostname == walnut
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -43,7 +43,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.role == manager
+          - node.hostname == walnut
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -56,10 +56,10 @@ services:
 
   # Backend API
   backend:
-    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tools-backend:latest
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-backend:alpha-2-patch
     environment:
       NODE_ENV: production
-      CORS_ORIGIN: https://tools.home.deepblack.cloud
+      CORS_ORIGIN: https://ballarat-tool-library.home.deepblack.cloud
       PORT: 8000
       API_VERSION: v1
     secrets:
@@ -91,11 +91,11 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tools-frontend:latest
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-frontend:alpha-2-patch
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: https://tools.home.deepblack.cloud/api
-      NEXT_PUBLIC_SITE_URL: https://tools.home.deepblack.cloud
+      NEXT_PUBLIC_API_URL: https://ballarat-tool-library.home.deepblack.cloud/api
+      NEXT_PUBLIC_SITE_URL: https://ballarat-tool-library.home.deepblack.cloud
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_FILE: /run/secrets/stripe_publishable_key
     secrets:
       - stripe_publishable_key
@@ -125,19 +125,19 @@ services:
         - traefik.docker.network=tengig
         
         # Frontend service - HTTPS with Let's Encrypt
-        - traefik.http.routers.tools-frontend.rule=Host(`tools.home.deepblack.cloud`)
-        - traefik.http.routers.tools-frontend.entrypoints=web-secured
-        - traefik.http.routers.tools-frontend.tls.certresolver=letsencryptresolver
-        - traefik.http.services.tools-frontend.loadbalancer.server.port=3000
-        - traefik.http.services.tools-frontend.loadbalancer.passhostheader=true
+        - traefik.http.routers.ballarat-tool-library-frontend.rule=Host(`ballarat-tool-library.home.deepblack.cloud`)
+        - traefik.http.routers.ballarat-tool-library-frontend.entrypoints=web-secured
+        - traefik.http.routers.ballarat-tool-library-frontend.tls.certresolver=letsencryptresolver
+        - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.server.port=3000
+        - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.passhostheader=true
         
         # API Backend routing - HTTPS with Let's Encrypt
-        - traefik.http.routers.tools-api.rule=Host(`tools.home.deepblack.cloud`) && PathPrefix(`/api`)
-        - traefik.http.routers.tools-api.entrypoints=web-secured
-        - traefik.http.routers.tools-api.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.tools-api.service=tools-backend
-        - traefik.http.services.tools-backend.loadbalancer.server.port=8000
-        - traefik.http.services.tools-backend.loadbalancer.passhostheader=true
+        - traefik.http.routers.ballarat-tool-library-api.rule=Host(`ballarat-tool-library.home.deepblack.cloud`) && PathPrefix(`/api`)
+        - traefik.http.routers.ballarat-tool-library-api.entrypoints=web-secured
+        - traefik.http.routers.ballarat-tool-library-api.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.ballarat-tool-library-api.service=ballarat-tool-library-backend
+        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.server.port=8000
+        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.passhostheader=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
