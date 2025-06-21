@@ -20,7 +20,7 @@ fi
 
 # Update DATABASE_URL with actual password
 if [ -n "$DB_PASSWORD" ]; then
-    export DATABASE_URL="postgresql://ballarat_user:${DB_PASSWORD}@db:5432/ballarat_tools?schema=public"
+    export DATABASE_URL="postgresql://ballarat_tool_library_user:${DB_PASSWORD}@db:5432/ballarat_tool_library?schema=public"
 fi
 
 # Update REDIS_URL with actual password
