@@ -1,0 +1,81 @@
+{
+  "roles": {
+    "non_member": {
+      "inherits": [],
+      "permissions": [
+        "catalog:view",
+        "membership:apply",
+        "public:contact_form"
+      ]
+    },
+    "member": {
+      "inherits": ["non_member"],
+      "permissions": [
+        "reservation:create",
+        "reservation:cancel",
+        "reservation:modify",
+        "loan:checkout",
+        "membership:edit_self",
+        "history:view_self"
+      ]
+    },
+    "volunteer": {
+      "inherits": ["member"],
+      "permissions": [
+        "membership:view",
+        "membership:record_payment",
+        "sales:record",
+        "backend:access"
+      ]
+    },
+    "librarian": {
+      "inherits": ["volunteer"],
+      "permissions": [
+        "loan:create",
+        "loan:modify",
+        "loan:delete",
+        "reservation:delete",
+        "reservation:create",
+        "reservation:modify",
+        "maintenance:create",
+        "maintenance:edit",
+        "membership:create",
+        "membership:edit",
+        "notifications:send"
+      ]
+    },
+    "maintenance": {
+      "inherits": [],
+      "permissions": [
+        "maintenance:complete",
+        "tool:flag_broken",
+        "tool:flag_unsafe"
+      ]
+    },
+    "curator": {
+      "inherits": ["librarian", "maintenance"],
+      "permissions": [
+        "tool:add",
+        "tool:edit",
+        "tool:delete",
+        "tool:flag_for_sale",
+        "tool:upload_image",
+        "tool:change_code"
+      ]
+    },
+    "principal": {
+      "inherits": ["curator"],
+      "permissions": [
+        "system:manage_roles",
+        "system:impersonate_user",
+        "system:audit_logs:view",
+        "user:ban",
+        "system:settings:update",
+        "tool:override_locks",
+        "loan:override",
+        "membership:delete_any",
+        "notifications:template_edit"
+      ]
+    }
+  }
+}

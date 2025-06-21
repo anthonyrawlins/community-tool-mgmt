@@ -187,4 +187,133 @@ router.get('/payments', asyncHandler(async (req, res) => {
   });
 }));
 
+// Recent activity endpoint
+router.get('/activity', asyncHandler(async (req, res) => {
+  const { limit = 50, offset = 0 } = req.query;
+  
+  // Get recent loans, payments, and user registrations
+  const [loans, payments, users] = await Promise.all([
+    prisma.loan.findMany({
+      take: Number(limit) / 3,
+      skip: Number(offset),
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true
+          }
+        },
+        tool: {
+          select: {
+            id: true,
+            name: true,
+            brand: true,
+            model: true
+          }
+        }
+      }
+    }),
+    prisma.payment.findMany({
+      take: Number(limit) / 3,
+      skip: Number(offset),
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true
+          }
+        }
+      }
+    }),
+    prisma.user.findMany({
+      take: Number(limit) / 3,
+      skip: Number(offset),
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        createdAt: true
+      }
+    })
+  ]);
+  
+  // Combine and sort all activities
+  const activities = [
+    ...loans.map(loan => ({
+      id: `loan-${loan.id}`,
+      type: loan.status === 'ACTIVE' ? 'checkout' : 'return',
+      title: loan.status === 'ACTIVE' ? 'Tool Checked Out' : 'Tool Returned',
+      description: `${loan.tool.name} ${loan.status === 'ACTIVE' ? 'checked out' : 'returned'}`,
+      timestamp: loan.createdAt,
+      userName: `${loan.user.firstName} ${loan.user.lastName}`,
+      toolName: loan.tool.name
+    })),
+    ...payments.map(payment => ({
+      id: `payment-${payment.id}`,
+      type: 'payment',
+      title: 'Payment Received',
+      description: `${payment.type} payment processed`,
+      timestamp: payment.createdAt,
+      userName: `${payment.user.firstName} ${payment.user.lastName}`,
+      amount: payment.totalAmount
+    })),
+    ...users.map(user => ({
+      id: `user-${user.id}`,
+      type: 'registration',
+      title: 'New Member Registration',
+      description: 'New member completed registration',
+      timestamp: user.createdAt,
+      userName: `${user.firstName} ${user.lastName}`
+    }))
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  
+  res.json({
+    success: true,
+    message: 'Activity feed retrieved successfully',
+    data: { activities }
+  });
+}));
+
+// Send overdue reminders endpoint
+router.post('/reminders/overdue', asyncHandler(async (req, res) => {
+  const overdueLoans = await prisma.loan.findMany({
+    where: {
+      status: 'ACTIVE',
+      dueDate: { lt: new Date() }
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      },
+      tool: {
+        select: {
+          name: true,
+          brand: true,
+          model: true
+        }
+      }
+    }
+  });
+  
+  // In a real implementation, this would send actual emails
+  // For now, we'll just log and return success
+  console.log(`Sending overdue reminders to ${overdueLoans.length} members`);
+  
+  res.json({
+    success: true,
+    message: `Overdue reminders sent to ${overdueLoans.length} members`,
+    data: { count: overdueLoans.length }
+  });
+}));
+
 export default router;

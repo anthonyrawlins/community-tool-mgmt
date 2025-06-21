@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 DOCKER_USER=${DOCKER_USER:-"anthonyrawlins"}  # Replace with your Docker Hub username
-PROJECT_NAME="ballarat-tools"
+PROJECT_NAME="ballarat-tool-library"
 VERSION=${VERSION:-"latest"}
 
 echo "🔨 Building and pushing ToolLibrary images to Docker Hub"
@@ -52,7 +52,7 @@ echo "Backend:  $DOCKER_USER/$PROJECT_NAME-backend:$VERSION"
 echo ""
 echo "🔄 Next steps:"
 echo "1. Update docker-compose.swarm.yml with your Docker Hub username"
-echo "2. Deploy to swarm with: docker stack deploy -c docker-compose.swarm.yml ballarat-tools"
+echo "2. Deploy to swarm with: docker stack deploy -c docker-compose.swarm.yml ballarat-tool-library"
 echo ""
 echo "🌐 After deployment, service will be available at:"
 echo "   https://tools.home.deepblack.cloud"

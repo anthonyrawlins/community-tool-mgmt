@@ -62,7 +62,7 @@ services:
       CORS_ORIGIN: https://ballarat-tool-library.home.deepblack.cloud
       PORT: 8000
       API_VERSION: v1
-      DATABASE_URL: postgresql://ballarat_tool_library_user:password_placeholder@db:5432/ballarat_tool_library?schema=public
+      DATABASE_URL: postgresql://ballarat_tool_library_user:CHANGEME_secure_db_password_123!@db:5432/ballarat_tool_library?schema=public
     secrets:
       - jwt_secret
       - stripe_secret_key

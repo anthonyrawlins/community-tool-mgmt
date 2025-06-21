@@ -25,7 +25,7 @@ import adminRoutes from './routes/admin';
 dotenv.config();
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '8000', 10);
 const API_VERSION = process.env.API_VERSION || 'v1';
 
 // Trust proxy for accurate IP addresses
