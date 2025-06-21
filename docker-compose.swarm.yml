@@ -56,7 +56,7 @@ services:
 
   # Backend API
   backend:
-    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-backend:alpha-2-patch
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-backend:latest
     environment:
       NODE_ENV: production
       CORS_ORIGIN: https://ballarat-tool-library.home.deepblack.cloud
@@ -92,7 +92,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-frontend:alpha-2-patch
+    image: ${DOCKER_USER:-anthonyrawlins}/ballarat-tool-library-frontend:latest
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: https://ballarat-tool-library.home.deepblack.cloud/api
