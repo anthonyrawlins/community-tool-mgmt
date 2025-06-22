@@ -33,7 +33,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "lighthouse": "^12.6.1",
     "prettier": "^3.5.3",
+    "puppeteer": "^24.10.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

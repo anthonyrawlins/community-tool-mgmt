@@ -1,0 +1,20 @@
+# Auto-generated Ollama Agents Configuration
+# Generated on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+# 
+# This file contains discovered Ollama instances and their capabilities
+# Format: agents.yaml for distributed AI development system
+
+agents:
+
+# Configuration metadata
+metadata:
+  generated_by: "ollama-discovery-script"
+  last_updated: "$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+  subnet_scanned: "$SUBNET"
+  discovery_timeout: ${TIMEOUT}s
+  
+# Usage notes:
+# - This file is auto-generated and will be overwritten on next discovery run
+# - Modify agent priorities and capabilities as needed for your workload
+# - Health checks run automatically based on interval_seconds setting
+# - Add custom agents manually below this section if needed

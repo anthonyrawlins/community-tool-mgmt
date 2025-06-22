@@ -113,7 +113,7 @@ class VisualAnalyzer {
       }
 
       // Wait for content to load
-      await page.waitForTimeout(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Take full page screenshot
       const filename = `${pageInfo.name}-${breakpoint.name}-${breakpoint.width}x${breakpoint.height}.png`;
