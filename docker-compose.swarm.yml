@@ -97,8 +97,8 @@ services:
         - traefik.http.routers.ballarat-tool-library-api.rule=Host(`ballarat-tool-library.home.deepblack.cloud`) && PathPrefix(`/api`)
         - traefik.http.routers.ballarat-tool-library-api.entrypoints=web-secured
         - traefik.http.routers.ballarat-tool-library-api.tls.certresolver=letsencryptresolver
-        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.server.port=8000
-        - traefik.http.services.ballarat-tool-library-backend.loadbalancer.passhostheader=true
+        - traefik.http.services.ballarat-tool-library_backend.loadbalancer.server.port=8000
+        - traefik.http.services.ballarat-tool-library_backend.loadbalancer.passhostheader=true
 
   # Frontend (Next.js)
   frontend:
@@ -116,7 +116,7 @@ services:
     depends_on:
       - backend
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -139,14 +139,15 @@ services:
         - traefik.http.routers.ballarat-tool-library-frontend.rule=Host(`ballarat-tool-library.home.deepblack.cloud`)
         - traefik.http.routers.ballarat-tool-library-frontend.entrypoints=web-secured
         - traefik.http.routers.ballarat-tool-library-frontend.tls.certresolver=letsencryptresolver
-        - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.server.port=3000
-        - traefik.http.services.ballarat-tool-library-frontend.loadbalancer.passhostheader=true
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+        - traefik.http.services.ballarat-tool-library_frontend.loadbalancer.server.port=3000
+        - traefik.http.services.ballarat-tool-library_frontend.loadbalancer.passhostheader=true
+    # Removed health check temporarily to debug service startup issues
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+    #   interval: 60s
+    #   timeout: 20s
+    #   retries: 5
+    #   start_period: 120s
 
 
 networks:

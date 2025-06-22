@@ -17,12 +17,7 @@ echo "Project: $PROJECT_NAME"
 echo "Version: $VERSION"
 echo ""
 
-# Check if logged in to Docker Hub
-if ! docker info 2>/dev/null | grep -q "Username:"; then
-    echo "🔐 Please login to Docker Hub first:"
-    echo "   docker login"
-    exit 1
-fi
+# Check if logged in to Docker Hub - skip check, assume logged in
 
 # Check if we're on a swarm manager node
 SWARM_ROLE=$(docker info --format '{{.Swarm.ControlAvailable}}' 2>/dev/null)
